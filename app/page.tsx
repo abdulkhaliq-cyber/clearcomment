@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <div className="bg-white text-slate-800 min-h-screen">
       <nav className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="text-2xl font-bold text-blue-600">AutoModly</div>
+        <div className="text-2xl font-bold text-blue-600">ClearComment</div>
         <a href="mailto:[YOUR-EMAIL]" className="text-sm font-semibold text-slate-600 hover:text-blue-600">Contact Support</a>
       </nav>
 
@@ -101,7 +101,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-8 text-sm text-slate-500">
 
           <div className="col-span-2">
-            <div className="font-bold text-slate-800 mb-4">AutoModly</div>
+            <div className="font-bold text-slate-800 mb-4">ClearComment</div>
             <p className="mb-1">[YOUR LEGAL BUSINESS NAME]</p>
             <p className="mb-1">[YOUR STREET ADDRESS]</p>
             <p className="mb-1">[YOUR CITY, STATE, ZIP]</p>
@@ -119,7 +119,7 @@ export default function Home() {
 
         </div>
         <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-slate-100 text-xs text-slate-400 text-center">
-          &copy; 2024 AutoModly. Not affiliated with Meta Platforms, Inc.
+          &copy; 2024 ClearComment. Not affiliated with Meta Platforms, Inc.
         </div>
       </footer>
     </div>
