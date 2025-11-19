@@ -1,135 +1,127 @@
 "use client";
 
-import PhoneMockup from "@/components/PhoneMockup";
-import Features from "@/components/Features";
-import Benefits from "@/components/Benefits";
-import CTA from "@/components/CTA";
+import { signIn } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    // Define the callback function globally so the SDK can find it
+    (window as any).checkLoginState = () => {
+      (window as any).FB.getLoginStatus((response: any) => {
+        console.log("FB Login Status (from button):", response);
+        if (response.status === 'connected') {
+          console.log("User is connected to Facebook!");
+          // Here you would typically redirect or update UI
+        }
+      });
+    };
+
+    const checkLoginStatus = () => {
+      if ((window as any).FB) {
+        (window as any).FB.getLoginStatus((response: any) => {
+          console.log("Initial FB Login Status:", response);
+        });
+        // Reparse XFBML to render the button if it wasn't there initially
+        (window as any).FB.XFBML.parse();
+      }
+    };
+
+    if ((window as any).FB) {
+      checkLoginStatus();
+    } else {
+      window.addEventListener('fb-sdk-ready', checkLoginStatus);
+    }
+
+    return () => {
+      window.removeEventListener('fb-sdk-ready', checkLoginStatus);
+      delete (window as any).checkLoginState;
+    };
+  }, []);
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="text-center lg:text-left space-y-8">
-            <div className="inline-block">
-              <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-2 rounded-full">
-                🚀 AI-Powered Moderation
-              </span>
-            </div>
-            
-            <h1 className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-              Keep Your Social Media Clean
-            </h1>
-            
-            <p className="text-xl lg:text-2xl text-gray-600 max-w-2xl">
-              AutoModly automatically detects and removes spam, hate speech, and inappropriate comments on 
-              <span className="font-semibold text-blue-600"> Facebook</span> and 
-              <span className="font-semibold text-purple-600"> Instagram</span> in real-time.
-            </p>
+    <div className="bg-white text-slate-800 min-h-screen">
+      <nav className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="text-2xl font-bold text-blue-600">AutoModly</div>
+        <a href="mailto:[YOUR-EMAIL]" className="text-sm font-semibold text-slate-600 hover:text-blue-600">Contact Support</a>
+      </nav>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-                Get Started Free
-              </button>
-              <button className="bg-white text-gray-800 px-8 py-4 rounded-xl font-semibold text-lg border-2 border-gray-200 hover:border-blue-600 hover:shadow-lg transition-all duration-200">
-                Watch Demo
-              </button>
-            </div>
+      <header className="max-w-4xl mx-auto px-6 py-20 text-center">
+        <h1 className="text-5xl font-extrabold leading-tight text-slate-900 mb-6">
+          Protect Your Brand’s <br /> <span className="text-blue-600">Comment Section</span>
+        </h1>
+        <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
+          Automatically hide spam, offensive language, and competitor links from your Facebook Page posts 24/7.
+        </p>
+        <div className="flex justify-center gap-4 items-center">
+          {/* 
+              Facebook SDK Login Button 
+              Replace config_id="{config_id}" with your actual Configuration ID from the Meta Developer Portal.
+              Or use scope="public_profile,email" for basic permissions.
+            */}
+          <div
+            className="fb-login-button"
+            data-width=""
+            data-size="large"
+            data-button-type="continue_with"
+            data-layout="default"
+            data-auto-logout-link="false"
+            data-use-continue-as="false"
+            data-onlogin="checkLoginState();"
+          ></div>
 
-            <div className="flex items-center gap-8 justify-center lg:justify-start text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span>14-day free trial</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Content - Phone Mockup */}
-          <div className="flex justify-center lg:justify-end">
-            <PhoneMockup />
-          </div>
+          <a href="#features" className="px-8 py-3 rounded-lg font-semibold text-slate-700 hover:bg-slate-100 transition">
+            How it Works
+          </a>
         </div>
-      </section>
+      </header>
 
-      {/* Stats Section */}
-      <section className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">99.9%</div>
-              <div className="text-gray-600">Accuracy Rate</div>
+      <section id="features" className="bg-slate-50 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-10">
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4 text-xl">🛡️</div>
+              <h3 className="text-lg font-bold mb-2">Auto-Hide Spam</h3>
+              <p className="text-slate-600 text-sm">Instantly hide comments containing known spam links or bot patterns.</p>
             </div>
-            <div>
-              <div className="text-4xl lg:text-5xl font-bold text-purple-600 mb-2">24/7</div>
-              <div className="text-gray-600">Auto Monitoring</div>
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4 text-xl">⚡</div>
+              <h3 className="text-lg font-bold mb-2">Keyword Filtering</h3>
+              <p className="text-slate-600 text-sm">Define your own blocklist of words. We moderate them in real-time.</p>
             </div>
-            <div>
-              <div className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">&lt;1s</div>
-              <div className="text-gray-600">Response Time</div>
-            </div>
-            <div>
-              <div className="text-4xl lg:text-5xl font-bold text-purple-600 mb-2">10k+</div>
-              <div className="text-gray-600">Happy Users</div>
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4 text-xl">📊</div>
+              <h3 className="text-lg font-bold mb-2">Activity Logs</h3>
+              <p className="text-slate-600 text-sm">Review hidden comments and restore them with a single click if needed.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <Features />
+      <footer className="border-t border-slate-200 mt-20 py-12">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-8 text-sm text-slate-500">
 
-      {/* Benefits Section */}
-      <Benefits />
-
-      {/* CTA Section */}
-      <CTA />
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div className="col-span-2">
-              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                AutoModly
-              </h3>
-              <p className="text-gray-400 mb-4">
-                Protecting your social media presence with AI-powered comment moderation.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition">Features</a></li>
-                <li><a href="#" className="hover:text-white transition">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition">About</a></li>
-                <li><a href="#" className="hover:text-white transition">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition">Privacy</a></li>
-              </ul>
-            </div>
+          <div className="col-span-2">
+            <div className="font-bold text-slate-800 mb-4">AutoModly</div>
+            <p className="mb-1">[YOUR LEGAL BUSINESS NAME]</p>
+            <p className="mb-1">[YOUR STREET ADDRESS]</p>
+            <p className="mb-1">[YOUR CITY, STATE, ZIP]</p>
+            <p>[YOUR PHONE NUMBER]</p>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 AutoModly. All rights reserved.</p>
+
+          <div>
+            <h4 className="font-bold text-slate-800 mb-4">Legal</h4>
+            <ul className="space-y-2">
+              <li><a href="/privacy.html" className="hover:text-blue-600">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-blue-600">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-blue-600">Data Deletion Instructions</a></li>
+            </ul>
           </div>
+
+        </div>
+        <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-slate-100 text-xs text-slate-400 text-center">
+          &copy; 2024 AutoModly. Not affiliated with Meta Platforms, Inc.
         </div>
       </footer>
-    </main>
+    </div>
   );
 }
-
-
