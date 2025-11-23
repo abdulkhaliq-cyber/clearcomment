@@ -14,6 +14,8 @@ interface Comment {
     authorId: string;
     createdAt: string;
     isHidden: boolean;
+    sentiment?: string;
+    sentimentScore?: number;
 }
 
 export default function ModerationFeed() {
@@ -63,6 +65,8 @@ export default function ModerationFeed() {
                                 authorId: newComment.authorId,
                                 createdAt: newComment.fbCreatedTime || newComment.createdAt,
                                 isHidden: newComment.isHidden,
+                                sentiment: newComment.sentiment,
+                                sentimentScore: newComment.sentimentScore,
                             },
                             ...prev,
                         ]);
@@ -70,7 +74,7 @@ export default function ModerationFeed() {
                         const updated = payload.new as any;
                         setComments((prev) =>
                             prev.map((c) =>
-                                c.id === updated.id ? { ...c, isHidden: updated.isHidden } : c
+                                c.id === updated.id ? { ...c, isHidden: updated.isHidden, sentiment: updated.sentiment, sentimentScore: updated.sentimentScore } : c
                             )
                         );
                     } else if (payload.eventType === "DELETE") {
@@ -102,7 +106,9 @@ export default function ModerationFeed() {
                     authorName: c.authorName || c.author,
                     authorId: c.authorId,
                     createdAt: c.createdAt || c.created_time,
-                    isHidden: c.isHidden || c.is_hidden
+                    isHidden: c.isHidden || c.is_hidden,
+                    sentiment: c.sentiment,
+                    sentimentScore: c.sentimentScore
                 })));
             }
         } catch (error) {
@@ -229,6 +235,14 @@ export default function ModerationFeed() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        {comment.sentiment && (
+                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${comment.sentiment === 'POSITIVE' ? 'bg-green-100 text-green-800' :
+                                                    comment.sentiment === 'NEGATIVE' ? 'bg-red-100 text-red-800' :
+                                                        'bg-slate-100 text-slate-800'
+                                                }`}>
+                                                {comment.sentiment}
+                                            </span>
+                                        )}
                                         {comment.isHidden && (
                                             <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
                                                 Hidden

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { moderateComment } from '@/lib/moderation';
 import { verifyFacebookSignature } from '@/lib/webhook-security';
+import Sentiment from 'sentiment';
 
 // GET: Verification endpoint for Facebook
 export async function GET(request: Request) {
@@ -85,12 +86,22 @@ async function processEvent(body: any) {
 
                             console.log(`[${new Date().toISOString()}] Processing comment ${verb} for page ${pageId}`);
 
+                            // Calculate Sentiment
+                            const sentiment = new Sentiment();
+                            const analysis = sentiment.analyze(message);
+                            const score = analysis.score;
+                            let sentimentLabel = "NEUTRAL";
+                            if (score > 0) sentimentLabel = "POSITIVE";
+                            if (score < 0) sentimentLabel = "NEGATIVE";
+
                             // Store/Update comment in DB
                             await prisma.comment.upsert({
                                 where: { id: comment_id },
                                 update: {
                                     message: message,
                                     isHidden: is_hidden === true,
+                                    sentiment: sentimentLabel,
+                                    sentimentScore: score,
                                 },
                                 create: {
                                     id: comment_id,
@@ -101,6 +112,8 @@ async function processEvent(body: any) {
                                     authorId: sender_id || 'Unknown',
                                     isHidden: is_hidden === true,
                                     fbCreatedTime: new Date(created_time * 1000),
+                                    sentiment: sentimentLabel,
+                                    sentimentScore: score,
                                 },
                             });
 

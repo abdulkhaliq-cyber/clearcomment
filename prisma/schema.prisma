@@ -117,8 +117,10 @@ model Comment {
   message     String   @db.Text
   authorName  String
   authorId    String
-  isHidden    Boolean  @default(false)
-  createdAt   DateTime @default(now()) // DB creation time
+  isHidden      Boolean  @default(false)
+  sentiment     String?  // "POSITIVE", "NEGATIVE", "NEUTRAL"
+  sentimentScore Float?  // -5 to 5
+  createdAt     DateTime @default(now()) // DB creation time
   fbCreatedTime DateTime // Facebook creation time
 
   @@index([pageId])
