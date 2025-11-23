@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Page {
   id: string;
@@ -41,10 +42,9 @@ export default function Dashboard() {
     }
   }, [status]);
 
-  // ... existing imports
-  import { supabase } from "@/lib/supabaseClient";
 
-  // ... inside Dashboard component ...
+
+
 
   // Realtime Subscription
   useEffect(() => {

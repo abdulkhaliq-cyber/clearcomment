@@ -76,11 +76,13 @@ model ModerationRule {
   id        String   @id @default(cuid())
   pageId    String
   page      FacebookPage @relation(fields: [pageId], references: [id])
-  type      String   // "BLOCK_KEYWORD", "AUTO_REPLY"
-  keyword   String?  // For BLOCK_KEYWORD (e.g., "spam", "badword")
-  replyText String?  // For AUTO_REPLY
-  isEnabled Boolean  @default(true)
-  createdAt DateTime @default(now())
+  type            String   // "BLOCK_KEYWORD", "AUTO_REPLY", "BLOCK_LINK", "BLOCK_IMAGE", "REGEX_MATCH"
+  keyword         String?  // For BLOCK_KEYWORD (e.g., "spam", "badword")
+  replyText       String?  // For AUTO_REPLY
+  ruleConfig      Json?    // For advanced config (e.g., exact match, case sensitivity)
+  isEnabled       Boolean  @default(true)
+  lastTriggeredAt DateTime?
+  createdAt       DateTime @default(now())
 
   @@index([pageId])
 }
