@@ -15,7 +15,9 @@ interface Rule {
     ruleConfig?: any;
 }
 
-export default function RulesPage() {
+import { Suspense } from "react";
+
+function RulesContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pageId = searchParams.get("pageId");
@@ -186,12 +188,12 @@ export default function RulesPage() {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
                                                 className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${rule.type === "BLOCK_KEYWORD"
-                                                        ? "bg-red-100 text-red-800"
-                                                        : rule.type === "AUTO_REPLY"
-                                                            ? "bg-blue-100 text-blue-800"
-                                                            : rule.type === "BLOCK_LINK"
-                                                                ? "bg-orange-100 text-orange-800"
-                                                                : "bg-purple-100 text-purple-800"
+                                                    ? "bg-red-100 text-red-800"
+                                                    : rule.type === "AUTO_REPLY"
+                                                        ? "bg-blue-100 text-blue-800"
+                                                        : rule.type === "BLOCK_LINK"
+                                                            ? "bg-orange-100 text-orange-800"
+                                                            : "bg-purple-100 text-purple-800"
                                                     }`}
                                             >
                                                 {rule.type.replace("_", " ")}
@@ -342,5 +344,17 @@ export default function RulesPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function RulesPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        }>
+            <RulesContent />
+        </Suspense>
     );
 }

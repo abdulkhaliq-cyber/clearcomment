@@ -13,7 +13,9 @@ interface PageDetails {
     createdAt: string;
 }
 
-export default function SettingsPage() {
+import { Suspense } from "react";
+
+function SettingsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pageId = searchParams.get("pageId");
@@ -240,5 +242,17 @@ export default function SettingsPage() {
 
             </div>
         </div>
+    );
+}
+
+export default function SettingsPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        }>
+            <SettingsContent />
+        </Suspense>
     );
 }
