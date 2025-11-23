@@ -11,7 +11,8 @@ export default function Home() {
         console.log("FB Login Status (from button):", response);
         if (response.status === 'connected') {
           console.log("User is connected to Facebook!");
-          // Here you would typically redirect or update UI
+          // Redirect to pages selection page
+          window.location.href = '/pages';
         }
       });
     };
@@ -42,7 +43,10 @@ export default function Home() {
     <div className="bg-white text-slate-800 min-h-screen">
       <nav className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
         <div className="text-2xl font-bold text-blue-600">ClearComment</div>
-        <a href="mailto:[YOUR-EMAIL]" className="text-sm font-semibold text-slate-600 hover:text-blue-600">Contact Support</a>
+        <div className="flex gap-4 items-center">
+          <a href="/login" className="text-sm font-semibold text-slate-600 hover:text-blue-600">Sign In</a>
+          <a href="/register" className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition">Sign Up</a>
+        </div>
       </nav>
 
       <header className="max-w-4xl mx-auto px-6 py-20 text-center">
@@ -66,6 +70,7 @@ export default function Home() {
             data-layout="default"
             data-auto-logout-link="false"
             data-use-continue-as="false"
+            data-scope="pages_manage_posts,pages_read_engagement,pages_read_user_content"
             data-onlogin="checkLoginState();"
           ></div>
 
