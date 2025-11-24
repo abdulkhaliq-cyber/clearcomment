@@ -1,9 +1,11 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  const session = await auth();
+const { auth } = NextAuth(authConfig);
+
+export default auth(async (request) => {
+  const session = request.auth;
 
   // Public routes that don't require authentication
   const publicRoutes = ["/", "/login", "/register", "/api/auth"];
@@ -24,7 +26,7 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
