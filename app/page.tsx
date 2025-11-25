@@ -57,11 +57,7 @@ export default function Home() {
           Automatically hide spam, offensive language, and competitor links from your Facebook Page posts 24/7.
         </p>
         <div className="flex justify-center gap-4 items-center">
-          {/* 
-              Facebook SDK Login Button 
-              Replace config_id="{config_id}" with your actual Configuration ID from the Meta Developer Portal.
-              Or use scope="public_profile,email" for basic permissions.
-            */}
+
           <div
             className="fb-login-button"
             data-width=""
