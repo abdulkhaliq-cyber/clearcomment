@@ -184,7 +184,10 @@ export default function Dashboard() {
           <div className="flex items-center gap-8">
             <h1 className="text-xl font-bold text-blue-600">ClearComment</h1>
             <nav className="hidden md:flex gap-4">
-              <Link href="/dashboard" className="text-slate-900 font-medium">Moderation</Link>
+              <Link href="/dashboard" className="text-slate-900 font-medium hover:text-blue-600">Dashboard</Link>
+              <Link href="/dashboard/moderation" className="text-slate-500 hover:text-slate-900">Moderation</Link>
+              <Link href="/dashboard/rules" className="text-slate-500 hover:text-slate-900">Rules</Link>
+              <Link href="/dashboard/logs" className="text-slate-500 hover:text-slate-900">Logs</Link>
               <Link href="/connect" className="text-slate-500 hover:text-slate-900">Connect Pages</Link>
             </nav>
           </div>
