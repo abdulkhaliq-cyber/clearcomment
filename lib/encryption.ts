@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'default_secret_key_must_be_32_bytes_long!'; // Must be 32 chars
+const RAW_KEY = process.env.ENCRYPTION_KEY || 'default_secret_key_must_be_32_bytes_long!';
+// Ensure key is exactly 32 bytes for aes-256-cbc
+const ENCRYPTION_KEY = crypto.createHash('sha256').update(String(RAW_KEY)).digest('base64').substr(0, 32);
 const IV_LENGTH = 16; // For AES, this is always 16
 
 export function encrypt(text: string): string {
