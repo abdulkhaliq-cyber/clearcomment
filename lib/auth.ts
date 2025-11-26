@@ -63,51 +63,65 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     callbacks: {
         async signIn({ user, account, profile }) {
+            console.log("SignIn Callback:", { provider: account?.provider, email: user.email, id: user.id });
+
             // Save Google OAuth users to database
             if (account?.provider === "google" && user.email) {
-                const existingUser = await prisma.user.findUnique({
-                    where: { email: user.email },
-                });
-
-                if (!existingUser) {
-                    await prisma.user.create({
-                        data: {
-                            email: user.email,
-                            name: user.name,
-                            image: user.image,
-                            emailVerified: new Date(),
-                        },
-                    });
-                } else if (!existingUser.image && user.image) {
-                    // Update image if user exists but doesn't have one
-                    await prisma.user.update({
+                try {
+                    const existingUser = await prisma.user.findUnique({
                         where: { email: user.email },
-                        data: { image: user.image },
                     });
+                    console.log("Google User Lookup:", existingUser ? "Found" : "Not Found");
+
+                    if (!existingUser) {
+                        const newUser = await prisma.user.create({
+                            data: {
+                                email: user.email,
+                                name: user.name,
+                                image: user.image,
+                                emailVerified: new Date(),
+                            },
+                        });
+                        console.log("Created Google User:", newUser.id);
+                    } else if (!existingUser.image && user.image) {
+                        await prisma.user.update({
+                            where: { email: user.email },
+                            data: { image: user.image },
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error in Google signIn:", e);
+                    return false; // Block sign in on error
                 }
             }
 
             // Save Facebook OAuth users to database
             if (account?.provider === "facebook" && user.email) {
-                const existingUser = await prisma.user.findUnique({
-                    where: { email: user.email },
-                });
-
-                if (!existingUser) {
-                    await prisma.user.create({
-                        data: {
-                            email: user.email,
-                            name: user.name,
-                            image: user.image,
-                            emailVerified: new Date(),
-                        },
-                    });
-                } else if (!existingUser.image && user.image) {
-                    // Update image if user exists but doesn't have one
-                    await prisma.user.update({
+                try {
+                    const existingUser = await prisma.user.findUnique({
                         where: { email: user.email },
-                        data: { image: user.image },
                     });
+                    console.log("Facebook User Lookup:", existingUser ? "Found" : "Not Found");
+
+                    if (!existingUser) {
+                        const newUser = await prisma.user.create({
+                            data: {
+                                email: user.email,
+                                name: user.name,
+                                image: user.image,
+                                emailVerified: new Date(),
+                            },
+                        });
+                        console.log("Created Facebook User:", newUser.id);
+                    } else if (!existingUser.image && user.image) {
+                        await prisma.user.update({
+                            where: { email: user.email },
+                            data: { image: user.image },
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error in Facebook signIn:", e);
+                    return false; // Block sign in on error
                 }
             }
 
