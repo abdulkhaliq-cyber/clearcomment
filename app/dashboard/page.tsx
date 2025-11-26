@@ -206,6 +206,12 @@ export default function Dashboard() {
                 <img src={session.user.image} alt="User" className="h-full w-full object-cover" />
               )}
             </div>
+            <button
+              onClick={() => router.push("/api/auth/signout")}
+              className="text-sm text-slate-500 hover:text-red-600 font-medium"
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       </header>
