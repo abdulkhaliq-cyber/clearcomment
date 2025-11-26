@@ -137,13 +137,12 @@ export default function Dashboard() {
   const handleAction = async (commentId: string, action: "HIDE" | "UNHIDE" | "DELETE") => {
     setActionLoading(commentId);
     try {
-      const res = await fetch("/api/moderation/action", {
+      const res = await fetch(`/api/moderation/${action.toLowerCase()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pageId: selectedPage,
           commentId,
-          action,
         }),
       });
 
