@@ -128,12 +128,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return true;
         },
         async jwt({ token, user, account }) {
-            // Initial sign in - store user info and access token
-            if (user) {
-                token.id = user.id;
-                token.email = user.email;
-                token.name = user.name;
-                token.picture = user.image;
+            // Initial sign in - fetch the actual user from DB to get correct ID
+            if (user && user.email) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { email: user.email },
+                });
+
+                if (dbUser) {
+                    token.id = dbUser.id; // Use DB ID, not OAuth provider ID
+                    token.email = dbUser.email;
+                    token.name = dbUser.name;
+                    token.picture = dbUser.image;
+                    console.log("JWT Callback - Using DB User ID:", dbUser.id);
+                } else {
+                    console.error("JWT Callback - User not found in DB:", user.email);
+                }
             }
 
             // Store Facebook access token in JWT
