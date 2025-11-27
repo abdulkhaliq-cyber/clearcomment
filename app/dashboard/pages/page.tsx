@@ -86,9 +86,20 @@ export default function ConnectedPages() {
         <div className="min-h-screen bg-slate-50 p-8">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Connected Pages</h1>
-                        <p className="text-slate-600 mt-1">Manage your Facebook Pages and moderation settings</p>
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href="/dashboard"
+                            className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                            title="Back to Dashboard"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </Link>
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-900">Connected Pages</h1>
+                            <p className="text-slate-600 mt-1">Manage your Facebook Pages and moderation settings</p>
+                        </div>
                     </div>
                     <Link
                         href="/connect"
