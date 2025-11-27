@@ -25,7 +25,10 @@ export async function POST(
         const body = await request.json();
         const { pageId, commentId, message } = body;
 
+        console.log("Moderation Action Request:", { action: actionParam, pageId, commentId, body });
+
         if (!pageId || !commentId) {
+            console.error("Missing data:", { pageId, commentId });
             return new NextResponse("Missing pageId or commentId", { status: 400 });
         }
 
