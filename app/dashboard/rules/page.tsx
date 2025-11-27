@@ -137,9 +137,9 @@ function RulesContent() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link
-                            href="/dashboard"
+                            href="/dashboard/pages"
                             className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
-                            title="Back to Dashboard"
+                            title="Back to Pages"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
