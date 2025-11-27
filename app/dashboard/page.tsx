@@ -196,11 +196,11 @@ export default function Dashboard() {
             <select
               value={selectedPage}
               onChange={(e) => setSelectedPage(e.target.value)}
-              className="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              className="hidden sm:block px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 transition cursor-pointer"
             >
               {pages.map((page) => (
                 <option key={page.id} value={page.id}>
-                  {page.pageName}
+                  📄 {page.pageName}
                 </option>
               ))}
             </select>
