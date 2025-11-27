@@ -32,6 +32,7 @@ export default function Dashboard() {
   const [loadingPages, setLoadingPages] = useState(true);
   const [loadingComments, setLoadingComments] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null); // Comment ID being acted on
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch connected pages on load
   useEffect(() => {
@@ -210,12 +211,43 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => router.push("/api/auth/signout")}
-              className="text-sm text-slate-500 hover:text-red-600 font-medium"
+              className="hidden md:block text-sm text-slate-500 hover:text-red-600 font-medium"
             >
               Sign Out
             </button>
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-slate-500 hover:text-slate-700"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white">
+            <nav className="px-4 py-2 space-y-1">
+              <Link href="/dashboard" className="block px-3 py-2 text-slate-900 font-medium hover:bg-slate-50 rounded-lg">Dashboard</Link>
+              <Link href="/dashboard/moderation" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg">Moderation</Link>
+              <Link href="/dashboard/rules" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg">Rules</Link>
+              <Link href="/dashboard/logs" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg">Logs</Link>
+              <Link href="/connect" className="block px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-lg">Connect Pages</Link>
+              <button
+                onClick={() => router.push("/api/auth/signout")}
+                className="block w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg font-medium"
+              >
+                Sign Out
+              </button>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
