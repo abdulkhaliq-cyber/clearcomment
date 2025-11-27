@@ -79,7 +79,7 @@ export async function GET(request: Request) {
                 if (post.comments && post.comments.data) {
                     for (const comment of post.comments.data) {
                         comments.push({
-                            commentId: comment.id,
+                            id: comment.id, // Use 'id' to match dashboard interface
                             message: comment.message,
                             authorName: comment.from?.name || "Unknown",
                             authorId: comment.from?.id,
