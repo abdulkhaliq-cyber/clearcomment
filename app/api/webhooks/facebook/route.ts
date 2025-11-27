@@ -22,9 +22,13 @@ export async function GET(request: Request) {
 
 // POST: Webhook handler
 export async function POST(request: Request) {
+    console.log("📨 Webhook POST received at:", new Date().toISOString());
+
     try {
         const rawBody = await request.text();
         const signature = request.headers.get('x-hub-signature-256');
+
+        console.log("Webhook body length:", rawBody.length, "Signature present:", !!signature);
 
         // 1. Verify Signature
         if (!verifyFacebookSignature(rawBody, signature, process.env.FACEBOOK_CLIENT_SECRET!)) {
@@ -33,6 +37,7 @@ export async function POST(request: Request) {
         }
 
         const body = JSON.parse(rawBody);
+        console.log("✅ Webhook verified. Event object:", body.object, "Entries:", body.entry?.length);
 
         // 2. Respond immediately (Fire-and-forget processing)
         processEvent(body).catch(err => console.error("Async processing error:", err));
