@@ -14,7 +14,8 @@ interface CommentData {
 interface Rule {
     id: string;
     keywords: string[];
-    action: 'HIDE' | 'DELETE';
+    action: 'HIDE' | 'DELETE' | 'REPLY' | 'DM';
+    responseMessage?: string;
     enabled: boolean;
 }
 
@@ -52,7 +53,7 @@ export async function processComment(pageId: string, commentData: CommentData) {
             console.log(`✅ Rule matched: ${rule.id} - Action: ${rule.action}`);
 
             // Perform moderation action
-            await performModerationAction(pageId, commentData.comment_id, rule.action);
+            await performModerationAction(pageId, commentData.comment_id, rule.action, rule.responseMessage);
 
             // Log the action
             const db = getDb();
@@ -77,7 +78,8 @@ export async function processComment(pageId: string, commentData: CommentData) {
 export async function performModerationAction(
     pageId: string,
     commentId: string,
-    action: 'HIDE' | 'DELETE'
+    action: 'HIDE' | 'DELETE' | 'REPLY' | 'DM',
+    messageContent?: string
 ) {
     try {
         const db = getDb();
@@ -96,17 +98,23 @@ export async function performModerationAction(
         }
 
         // Call Facebook Graph API
-        const endpoint = action === 'DELETE'
-            ? `https://graph.facebook.com/v18.0/${commentId}`
-            : `https://graph.facebook.com/v18.0/${commentId}`;
-
+        let endpoint = `https://graph.facebook.com/v18.0/${commentId}`;
+        let method = 'post';
         const params: any = { access_token: accessToken };
 
-        if (action === 'HIDE') {
+        if (action === 'DELETE') {
+            method = 'delete';
+        } else if (action === 'HIDE') {
             params.is_hidden = true;
+        } else if (action === 'REPLY') {
+            endpoint = `https://graph.facebook.com/v18.0/${commentId}/comments`;
+            params.message = messageContent || 'Auto-reply';
+        } else if (action === 'DM') {
+            // For DM, we need to find the user ID and send a message via Messenger API
+            // Note: Private replies to comments are a specific endpoint
+            endpoint = `https://graph.facebook.com/v18.0/${commentId}/private_replies`;
+            params.message = messageContent || 'Auto-reply';
         }
-
-        const method = action === 'DELETE' ? 'delete' : 'post';
 
         await axios({
             method,

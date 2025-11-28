@@ -93,13 +93,20 @@ export default function Dashboard() {
     const handleAction = async (commentId: string, action: "HIDE" | "UNHIDE" | "DELETE") => {
         setActionLoading(commentId);
         try {
-            const res = await fetch(`/api/moderation/${action.toLowerCase()}`, {
+            // Use Railway Worker URL if available, otherwise fallback to local proxy (which might fail if Next.js isn't running)
+            const RAILWAY_URL = import.meta.env.VITE_RAILWAY_URL;
+            const url = RAILWAY_URL
+                ? `${RAILWAY_URL}/moderation/action`
+                : `/api/moderation/${action.toLowerCase()}`;
+
+            const body = RAILWAY_URL
+                ? { pageId: selectedPage, commentId, action }
+                : { pageId: selectedPage, commentId };
+
+            const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    pageId: selectedPage,
-                    commentId,
-                }),
+                body: JSON.stringify(body),
             });
 
             if (res.ok) {

@@ -12,7 +12,7 @@ router.post('/action', async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        if (action !== 'HIDE' && action !== 'DELETE') {
+        if (!['HIDE', 'DELETE', 'REPLY', 'DM'].includes(action)) {
             return res.status(400).json({ error: 'Invalid action' });
         }
 
