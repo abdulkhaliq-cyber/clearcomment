@@ -18,7 +18,7 @@ router.post('/comments', async (req: Request, res: Response) => {
         const postsResponse = await fetch(
             `https://graph.facebook.com/v18.0/${pageId}/posts?fields=id,message,created_time&limit=10&access_token=${pageAccessToken}`
         );
-        const postsData = await postsResponse.json();
+        const postsData: any = await postsResponse.json();
 
         if (postsData.error) {
             throw new Error(postsData.error.message);
@@ -33,7 +33,7 @@ router.post('/comments', async (req: Request, res: Response) => {
             const commentsResponse = await fetch(
                 `https://graph.facebook.com/v18.0/${post.id}/comments?fields=id,message,from,created_time,is_hidden&limit=50&access_token=${pageAccessToken}`
             );
-            const commentsData = await commentsResponse.json();
+            const commentsData: any = await commentsResponse.json();
 
             if (commentsData.error) {
                 console.error(`Error fetching comments for post ${post.id}:`, commentsData.error);
