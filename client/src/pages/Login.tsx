@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider, facebookProvider } from "../lib/firebase";
 
 export default function Login() {
@@ -9,21 +9,6 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
-    // Check for redirect result on mount
-    useEffect(() => {
-        const checkRedirect = async () => {
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    navigate('/dashboard');
-                }
-            } catch (err: any) {
-                setError(err.message || "Failed to sign in");
-            }
-        };
-        checkRedirect();
-    }, [navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,7 +29,8 @@ export default function Login() {
         setError("");
         setIsLoading(true);
         try {
-            await signInWithRedirect(auth, googleProvider);
+            await signInWithPopup(auth, googleProvider);
+            navigate('/dashboard');
         } catch (err: any) {
             setError(err.message || "Failed to sign in with Google");
             setIsLoading(false);
@@ -52,12 +38,57 @@ export default function Login() {
     };
 
     const handleFacebookSignIn = async () => {
+        console.log("🔵 Facebook login button clicked");
         setError("");
         setIsLoading(true);
+
         try {
-            await signInWithRedirect(auth, facebookProvider);
+            console.log("🔵 Attempting Facebook sign-in with popup...");
+            console.log("🔵 Facebook Provider config:", {
+                providerId: facebookProvider.providerId,
+                scopes: (facebookProvider as any)._scopes || []
+            });
+
+            const result = await signInWithPopup(auth, facebookProvider);
+
+            console.log("✅ Facebook login successful!");
+            console.log("✅ User:", {
+                uid: result.user.uid,
+                email: result.user.email,
+                displayName: result.user.displayName,
+                photoURL: result.user.photoURL
+            });
+
+            navigate('/dashboard');
         } catch (err: any) {
-            setError(err.message || "Failed to sign in with Facebook");
+            console.error("❌ Facebook login error:", err);
+            console.error("❌ Error code:", err.code);
+            console.error("❌ Error message:", err.message);
+            console.error("❌ Full error object:", JSON.stringify(err, null, 2));
+
+            // Provide more specific error messages
+            let errorMessage = "Failed to sign in with Facebook";
+
+            if (err.code === 'auth/popup-closed-by-user') {
+                errorMessage = "Sign-in was cancelled. Please try again.";
+                console.log("ℹ️ User closed the popup");
+            } else if (err.code === 'auth/popup-blocked') {
+                errorMessage = "Pop-up was blocked by your browser. Please allow pop-ups and try again.";
+                console.log("ℹ️ Browser blocked the popup");
+            } else if (err.code === 'auth/account-exists-with-different-credential') {
+                errorMessage = "An account already exists with the same email address but different sign-in credentials.";
+                console.log("ℹ️ Account exists with different credential");
+            } else if (err.code === 'auth/unauthorized-domain') {
+                errorMessage = "This domain is not authorized. Please add it to Firebase Authentication settings.";
+                console.log("ℹ️ Domain not authorized in Firebase");
+            } else if (err.message?.includes('permissions') || err.message?.includes('scope')) {
+                errorMessage = "Facebook permissions error. Please ensure the Facebook app has 'email' and 'public_profile' permissions enabled.";
+                console.log("ℹ️ Facebook permissions issue");
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+
+            setError(errorMessage);
             setIsLoading(false);
         }
     };
