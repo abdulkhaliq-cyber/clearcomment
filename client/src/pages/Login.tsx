@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider, facebookProvider } from "../lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup, FacebookAuthProvider } from "firebase/auth";
+import { auth, googleProvider } from "../lib/firebase";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -43,13 +43,21 @@ export default function Login() {
         setIsLoading(true);
 
         try {
-            console.log("🔵 Attempting Facebook sign-in with popup...");
-            console.log("🔵 Facebook Provider config:", {
-                providerId: facebookProvider.providerId,
-                scopes: (facebookProvider as any)._scopes || []
+            // Create a fresh provider instance to ensure scopes are applied
+            const provider = new FacebookAuthProvider();
+            provider.addScope('email');
+            provider.addScope('public_profile');
+            provider.setCustomParameters({
+                'display': 'popup'
             });
 
-            const result = await signInWithPopup(auth, facebookProvider);
+            console.log("🔵 Attempting Facebook sign-in with popup...");
+            // console.log("🔵 Facebook Provider config:", {
+            //     providerId: facebookProvider.providerId,
+            //     scopes: (facebookProvider as any)._scopes || []
+            // });
+
+            const result = await signInWithPopup(auth, provider);
 
             console.log("✅ Facebook login successful!");
             console.log("✅ User:", {

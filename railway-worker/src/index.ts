@@ -6,6 +6,7 @@ import webhookRouter from './routes/webhook';
 import automationRouter from './routes/automation';
 import aiRouter from './routes/ai';
 import moderationRouter from './routes/moderation';
+import syncRouter from './routes/sync';
 import { initScheduler } from './services/scheduler';
 
 dotenv.config();
@@ -46,6 +47,7 @@ app.use('/webhook', webhookRouter);
 app.use('/automation', automationRouter);
 app.use('/ai', aiRouter);
 app.use('/moderation', moderationRouter);
+app.use('/sync', syncRouter);
 
 // Error handling
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

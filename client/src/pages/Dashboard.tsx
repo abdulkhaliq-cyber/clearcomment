@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { getUserPages, subscribeToPageComments } from "../lib/firestore";
+import { getUserPages, subscribeToPageComments, getDocument } from "../lib/firestore";
 import Layout from "../components/Layout";
 import { Trash2, Eye, EyeOff } from "lucide-react";
 
@@ -30,6 +30,7 @@ export default function Dashboard() {
     const [comments, setComments] = useState<Comment[]>([]);
     const [loadingPages, setLoadingPages] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [syncing, setSyncing] = useState(false);
 
     // Fetch connected pages on load
     useEffect(() => {
@@ -82,6 +83,51 @@ export default function Dashboard() {
             console.error("Failed to fetch pages", error);
         } finally {
             setLoadingPages(false);
+        }
+    };
+
+    const handleSyncComments = async () => {
+        if (!selectedPage) return;
+
+        setSyncing(true);
+        try {
+            const selectedPageData = pages.find(p => p.id === selectedPage);
+            if (!selectedPageData) return;
+
+            // Get page access token from Firestore
+            const pageDoc = await getDocument('pages', selectedPage);
+            if (!pageDoc) {
+                alert("Page not found");
+                return;
+            }
+
+            const RAILWAY_URL = import.meta.env.VITE_RAILWAY_URL;
+            if (!RAILWAY_URL) {
+                alert("Railway URL not configured");
+                return;
+            }
+
+            const response = await fetch(`${RAILWAY_URL}/sync/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pageId: selectedPageData.pageId,
+                    pageAccessToken: (pageDoc as any).pageAccessToken
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`✅ Synced ${data.synced} comments!`);
+            } else {
+                alert(`❌ ${data.error}`);
+            }
+        } catch (error) {
+            console.error("Sync failed:", error);
+            alert("Failed to sync comments");
+        } finally {
+            setSyncing(false);
         }
     };
 
@@ -155,9 +201,18 @@ export default function Dashboard() {
                 <div className="space-y-6">
                     <div className="flex justify-between items-center">
                         <h2 className="text-lg font-semibold text-slate-900">Latest Comments</h2>
-                        <div className="flex items-center gap-2 text-sm text-green-600">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            Live Updates
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={handleSyncComments}
+                                disabled={syncing}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+                            >
+                                {syncing ? "Syncing..." : "Sync Comments"}
+                            </button>
+                            <div className="flex items-center gap-2 text-sm text-green-600">
+                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                Live Updates
+                            </div>
                         </div>
                     </div>
 

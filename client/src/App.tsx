@@ -5,6 +5,9 @@ import Register from './pages/Register';
 import Logs from './pages/Logs';
 import Home from './pages/Home';
 import ProtectedRoute from './components/ProtectedRoute';
+import Connect from './pages/Connect';
+import Moderation from './pages/Moderation';
+import Rules from './pages/Rules';
 
 function App() {
   return (
@@ -26,6 +29,30 @@ function App() {
           element={
             <ProtectedRoute>
               <Logs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/moderation"
+          element={
+            <ProtectedRoute>
+              <Moderation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/rules"
+          element={
+            <ProtectedRoute>
+              <Rules />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/connect"
+          element={
+            <ProtectedRoute>
+              <Connect />
             </ProtectedRoute>
           }
         />
