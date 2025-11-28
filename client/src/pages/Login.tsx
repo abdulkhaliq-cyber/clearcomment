@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, googleProvider, facebookProvider } from "../lib/firebase";
 
 export default function Login() {
@@ -9,6 +9,21 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
+    // Check for redirect result on mount
+    useEffect(() => {
+        const checkRedirect = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    navigate('/dashboard');
+                }
+            } catch (err: any) {
+                setError(err.message || "Failed to sign in");
+            }
+        };
+        checkRedirect();
+    }, [navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,13 +43,10 @@ export default function Login() {
     const handleGoogleSignIn = async () => {
         setError("");
         setIsLoading(true);
-
         try {
-            await signInWithPopup(auth, googleProvider);
-            navigate('/dashboard');
+            await signInWithRedirect(auth, googleProvider);
         } catch (err: any) {
             setError(err.message || "Failed to sign in with Google");
-        } finally {
             setIsLoading(false);
         }
     };
@@ -42,13 +54,10 @@ export default function Login() {
     const handleFacebookSignIn = async () => {
         setError("");
         setIsLoading(true);
-
         try {
-            await signInWithPopup(auth, facebookProvider);
-            navigate('/dashboard');
+            await signInWithRedirect(auth, facebookProvider);
         } catch (err: any) {
             setError(err.message || "Failed to sign in with Facebook");
-        } finally {
             setIsLoading(false);
         }
     };
