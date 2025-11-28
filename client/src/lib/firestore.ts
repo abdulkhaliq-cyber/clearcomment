@@ -217,3 +217,19 @@ export const getPageLogs = async (pageId: string, limitCount = 100) => {
         limit(limitCount)
     ]);
 };
+
+// Subscribe to page logs (real-time)
+export const subscribeToPageLogs = (
+    pageId: string,
+    callback: (logs: DocumentData[]) => void
+) => {
+    return subscribeToCollection(
+        COLLECTIONS.LOGS,
+        [
+            where('pageId', '==', pageId),
+            orderBy('performedAt', 'desc'),
+            limit(100)
+        ],
+        callback
+    );
+};

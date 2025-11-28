@@ -6,6 +6,7 @@ import webhookRouter from './routes/webhook';
 import automationRouter from './routes/automation';
 import aiRouter from './routes/ai';
 import moderationRouter from './routes/moderation';
+import { initScheduler } from './services/scheduler';
 
 dotenv.config();
 
@@ -14,6 +15,9 @@ const PORT = process.env.PORT || 3001;
 
 // Initialize Firebase Admin
 initializeFirebase();
+
+// Initialize Scheduler
+initScheduler();
 
 // Middleware
 app.use(cors({
